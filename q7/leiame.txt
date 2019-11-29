@@ -1,0 +1,9 @@
+*Biblioteca utilizada: DataTables é um plug-in para o JQuery, que facilita a visuzalização e operações com tabela do HTML.
+https://datatables.net/
+
+*Os seguintes itens não funcionam:
+-search
+-paginação
+-ordenação
+
+*Ao efetuar alguma operação (Insert, Update ou Delete) é necessário dar reload na página. O reload do DataTable não funcionou nesse caso.

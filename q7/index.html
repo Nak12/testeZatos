@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+  
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<title>Teste</title>
+</head>
+<body>
+  <div class="container-fluid">
+    <h1 align="center">CLIENTES</h1><br>
+    <div class="table-responsive">
+        <div align="right">
+          <button type="button" id="add_button" data-toggle="modal" data-target="#userModal" class="btn btn-info">Adicionar</button>
+        </div>
+        <br>
+      <table id="table_id" class="table table-bordered table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th>Nome</th>
+              <th>CPF/CNPJ</th>
+              <th>E-mail</th>
+              <th>Latitude</th>
+              <th>Longitude</th>
+              <th>Data Cadastro</th>
+              <th>Modificado em</th>
+              <th>última Atividade</th>
+              <th>Atualizar</th>
+              <th>Deletar</th>
+            </tr>
+          </thead>
+          <tfoot class="thead-dark">
+            <tr>
+              <th>Nome</th>
+              <th>CPF/CNPJ</th>
+              <th>E-mail</th>
+              <th>Latitude</th>
+              <th>Longitude</th>
+              <th>Data Cadastro</th>
+              <th>Modificado em</th>
+              <th>última Atividade</th>
+              <th>Atualizar</th>
+              <th>Deletar</th>
+            </tr>
+          </tfoot>
+        </table>
+    </div>
+  </div>
+
+  <div id="userModal" class="modal fade">
+    <div class="modal-dialog">
+      <form method="post" id="user_form" enctype="multipart/form-data">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Adicionar</h4>
+          </div>
+          <div class="modal-body">
+            <label>Nome</label>
+            <input type="text" name="nome" id="nome" class="form-control" autocomplete="off" required />
+            <br>
+            <label>CPF/CNPJ</label>
+            <input type="text" name="cadastro" id="cadastro" class="form-control" autocomplete="off" required />
+            <br>
+            <label>E-mail</label>
+            <input type="email" name="email" id="email" class="form-control" autocomplete="off" required />
+            <br>
+            <label>Latitude</label>
+            <input type="text" name="latitude" id="latitude" class="form-control" autocomplete="off" required />
+            <br>
+            <label>Longitude</label>
+            <input type="text" name="longitude" id="longitude" class="form-control" autocomplete="off" required />
+            <br>
+            <!-- <label>Data</label>
+            <input type="date" name="dataIn" id="latitude" class="form-control" required />
+            <br> -->
+          </div>
+          <div class="modal-footer">
+            <input type="hidden" name="user_id" id="user_id" />
+            <input type="hidden" name="operation" id="operation" />
+            <input type="submit" name="action" id="action" class="btn btn-success" value="Adicionar" />
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+   </div>
+  
+  <script>
+
+   
+    
+    //funcionalidade do botão 'Adicionar'
+  $(document).ready(function(){
+        $("#add_button").click(function(){
+          $("#user_form")[0].reset();
+          $(".modal-title").text("Adicionar usuário");
+          $("#action").val("Adicionar");
+          $("#operation").val("Add");
+        });
+ 
+
+    //(opcional) transforma em letra minúscula os campos de entrada
+    // $(document).ready(function(){
+    //   $("#nome, #cadastro, #email").on('change keyup paste',function(){
+    //   $(this).val($(this).val().toLowerCase());
+    //   })
+    // })
+
+    //preenche a tabela
+    var dataTable = $(document).ready( function () {
+      $('#table_id').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+          "url": "fetch.php",
+          "type": "POST"
+        },
+        "columns": [
+          {"data": "nome"},
+          {"data": "cadastro"},
+          {"data": "email"},
+          {"data": "latitude"},
+          {"data": "longitude"},
+          {"data": "data_cadastro"},
+          {"data": "data_modificacao"},
+          {"data": "ultima_atividade"},
+          {"data": "update"},
+          {"data": "delete"}
+        ]
+      });
+    });
+
+    //envio dos dados (inserção)
+    $(document).on('submit', '#user_form', function(event){
+      event.preventDefault();
+      var nome = $('#nome').val();
+      var cadastro = $('#cadastro').val();
+      var email = $('#email').val();
+      var latitude = $('#latitude').val();
+      var longitude = $('#longitude').val();
+      //let dataIn = $('#data').val();
+ 
+      if(nome != '' && cadastro != '' && email != '' && latitude != '' && longitude != ''){
+        $.ajax({
+          url:"insert.php",
+          method:'POST',
+          data:new FormData(this),
+          contentType:false,
+          processData:false,
+          success:function(data){
+            alert(data);
+            $('#user_form')[0].reset();
+            $('#userModal').modal('hide');
+            dataTable.ajax.reload();
+          }
+        });
+      }
+      else{
+        alert("Por favor, preencha todos os campos.");
+      }
+    });
+
+    //editar(update)
+    $(document).on('click', '.update', function(){
+    var user_id = $(this).attr("id");
+    console.log('Editar: ', user_id);
+    $.ajax({
+      url:"fetch_single.php",
+      method:"POST",
+      data:{user_id:user_id},
+      dataType:"json",
+      success:function(data){
+        $('#userModal').modal('show');
+        $('#nome').val(data.nome);
+        $('#cadastro').val(data.cadastro);
+        $('#email').val(data.email);
+        $('#latitude').val(data.latitude);
+        $('#longitude').val(data.longitude);
+        $('.modal-title').text("Atualizar dados do cliente");
+        $('#user_id').val(user_id);
+        $('#action').val("Editar");
+        $('#operation').val("Edit");
+      }
+    })
+ });
+
+ //delete
+ $(document).on('click', '.delete', function(){
+  var user_id = $(this).attr("id");
+  console.log('Deletar:', user_id);
+  if(confirm("Você tem certeza que quer deletar esse registro?"))
+  {
+   $.ajax({
+    url:"delete.php",
+    method:"POST",
+    data:{user_id:user_id},
+    success:function(data){
+     alert("Dado deletado com sucesso!");
+     //dataTable.ajax.reload();
+    }
+   });
+  }
+  else
+  {
+   return false; 
+  }
+ });
+
+});
+
+  </script>
+</body>
+</html>

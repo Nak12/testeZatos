@@ -1,0 +1,10 @@
+*O campo senha é do tipo varchar mas sem uma função de criptografia como MD5
+
+
+*Usuários criados:
+
+nome: joao
+pass: olamundo1984
+
+nome:maria
+pass: 123456
